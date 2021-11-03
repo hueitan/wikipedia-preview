@@ -44,9 +44,17 @@ jobs:
         id: branch-name
         uses: tj-actions/branch-names@v5
 
-      - name: Deploy 🚀
+      - name: Deploy Pages 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.5
         with:
           branch: gh-pages-test # The branch the action should deploy to.
           folder: demo # Still missing the Storybook
+          target-folder: ${{ steps.branch-name.outputs.current_branch }}
+        
+      - name: Deploy Storybook 🚀
+        uses: JamesIves/github-pages-deploy-action@4.1.5
+        with:
+          branch: gh-pages-test # The branch the action should deploy to.
+          folder: storybook-static # Still missing the Storybook
+          clean: false
           target-folder: ${{ steps.branch-name.outputs.current_branch }}
