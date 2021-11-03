@@ -35,9 +35,7 @@ jobs:
         run: npm run coverage
       
       - name: Cypress Test
-        run: |
-          npm run dev
-          npm run cypress:run 
+        run: npm run dev & npm run cypress:run 
       
       - name: Preparing Demo
         run: ./scripts/demo.sh
