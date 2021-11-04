@@ -24,11 +24,11 @@ jobs:
           npm install
           npm run build
      
-      - name: Unit Test (with coverage)
-        run: npm run coverage
+      # - name: Unit Test (with coverage)
+      #   run: npm run coverage
       
-      - name: Cypress Test
-        run: npm run dev & npm run cypress:run 
+      # - name: Cypress Test
+      #  run: npm run dev & npm run cypress:run 
   
       - name: Preparing Demo
         run: ./scripts/demo.sh
@@ -44,7 +44,9 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: artifact
-          path: path/to/artifact/ 
+          path: |
+            demo
+            storybook-static
 
   deploy:
       needs: build
