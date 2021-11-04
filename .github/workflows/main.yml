@@ -30,6 +30,12 @@ jobs:
       - name: Preparing Storybook
         run: npm run build-storybook
 
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
