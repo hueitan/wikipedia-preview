@@ -40,20 +40,31 @@ jobs:
         id: branch-name
         uses: tj-actions/branch-names@v5
 
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: artifact
+          path: path/to/artifact/ 
+
   deploy:
       needs: build
       runs-on: ubuntu-latest
       steps:
-      - name: Deploy Pages 🚀
-        uses: JamesIves/github-pages-deploy-action@4.1.5
-        with:
-          branch: gh-pages-test # The branch the action should deploy to.
-          folder: demo
-          target-folder: ${{ steps.branch-name.outputs.current_branch }}
-        
-      - name: Deploy Storybook 🚀
-        uses: JamesIves/github-pages-deploy-action@4.1.5
-        with:
-          branch: gh-pages-test # The branch the action should deploy to.
-          folder: storybook-static
-          target-folder: ${{ steps.branch-name.outputs.current_branch }}/storybook
+        - name: Download Artifact
+          uses: actions/download-artifact@v2
+          with:
+            name: artifact
+
+        - name: Deploy Pages 🚀
+          uses: JamesIves/github-pages-deploy-action@4.1.5
+          with:
+            branch: gh-pages-test # The branch the action should deploy to.
+            folder: demo
+            target-folder: ${{ steps.branch-name.outputs.current_branch }}
+
+        - name: Deploy Storybook 🚀
+          uses: JamesIves/github-pages-deploy-action@4.1.5
+          with:
+            branch: gh-pages-test # The branch the action should deploy to.
+            folder: storybook-static
+            target-folder: ${{ steps.branch-name.outputs.current_branch }}/storybook
