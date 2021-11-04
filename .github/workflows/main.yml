@@ -23,12 +23,6 @@ jobs:
         run: |
           npm install
           npm run build
-     
-      # - name: Unit Test (with coverage)
-      #   run: npm run coverage
-      
-      # - name: Cypress Test
-      #  run: npm run dev & npm run cypress:run 
   
       - name: Preparing Demo
         run: ./scripts/demo.sh
@@ -44,8 +38,20 @@ jobs:
             demo
             storybook-static
 
-  deploy:
+  test:
       needs: build
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+        
+        - name: Unit Test (with coverage)
+          run: npm run coverage
+      
+        - name: Cypress Test
+          run: npm run dev & npm run cypress:run 
+
+  deploy:
+      needs: test
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v2
