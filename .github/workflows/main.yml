@@ -19,6 +19,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: start deployment
+        uses: bobheadxi/deployments@v0.4.3
+        id: deployment
+        with:
+          step: start
+          token: ${{ secrets.GITHUB_TOKEN }}
+          env: release
+
       - uses: actions/cache@v2
         with:
           path: |
@@ -45,34 +53,34 @@ jobs:
             demo
             storybook-static
 
-  unit-test:
-      needs: build
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v2
-        - uses: actions/cache@v2
-          with:
-            path: node_modules
-            key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
-        - name: Unit Test (with coverage)
-          run: npm run coverage
+#   unit-test:
+#       needs: build
+#       runs-on: ubuntu-latest
+#       steps:
+#         - uses: actions/checkout@v2
+#         - uses: actions/cache@v2
+#           with:
+#             path: node_modules
+#             key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+#         - name: Unit Test (with coverage)
+#           run: npm run coverage
 
-  cypress-test:
-      needs: build
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v2
-        - uses: actions/cache@v2
-          with:
-            path: |
-              node_modules
-              /home/runner/.cache/Cypress
-            key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
-        - name: Cypress Test
-          run: npm run dev & npm run cypress:run 
+#   cypress-test:
+#       needs: build
+#       runs-on: ubuntu-latest
+#       steps:
+#         - uses: actions/checkout@v2
+#         - uses: actions/cache@v2
+#           with:
+#             path: |
+#               node_modules
+#               /home/runner/.cache/Cypress
+#             key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+#         - name: Cypress Test
+#           run: npm run dev & npm run cypress:run 
 
   deploy:
-      needs: [unit-test, cypress-test]
+      needs: [build]
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v2
@@ -99,3 +107,12 @@ jobs:
             branch: gh-pages-test # The branch the action should deploy to.
             folder: storybook-static
             target-folder: ${{ steps.branch-name.outputs.current_branch }}/storybook
+
+        - name: update deployment status
+          uses: bobheadxi/deployments@v0.4.3
+          if: always()
+          with:
+            step: finish
+            token: ${{ secrets.GITHUB_TOKEN }}
+            status: ${{ job.status }}
+            deployment_id: ${{ steps.deployment.outputs.deployment_id }}
