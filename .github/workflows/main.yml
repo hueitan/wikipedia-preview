@@ -19,6 +19,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - uses: actions/cache@v2
+        with:
+          path: 'node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+
       - name: Install and Build
         run: |
           npm install
@@ -43,7 +48,6 @@ jobs:
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v2
-        - run: npm install
         - name: Unit Test (with coverage)
           run: npm run coverage
 
@@ -52,7 +56,6 @@ jobs:
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v2
-        - run: npm install
         - name: Cypress Test
           run: npm run dev & npm run cypress:run 
 
