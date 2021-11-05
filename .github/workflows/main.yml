@@ -30,12 +30,6 @@ jobs:
       - name: Preparing Storybook
         run: npm run build-storybook
 
-      - name: Cache dependencies
-        uses: actions/cache@v2
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
-
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
@@ -44,20 +38,26 @@ jobs:
             demo
             storybook-static
 
-  test:
+  unit-test:
       needs: build
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v2
-        
+        - run: npm install
         - name: Unit Test (with coverage)
           run: npm run coverage
-      
+
+  cypress-test:
+      needs: build
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+        - run: npm install
         - name: Cypress Test
           run: npm run dev & npm run cypress:run 
 
   deploy:
-      needs: test
+      needs: [unit-test, cypress-test]
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v2
